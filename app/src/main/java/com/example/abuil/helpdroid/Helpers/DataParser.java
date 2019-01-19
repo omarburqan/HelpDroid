@@ -157,7 +157,6 @@ public class DataParser {
                     phone_number = phone_number.substring(phone_number.indexOf(":") + 1, phone_number.indexOf(","));
                     phone_number = phone_number.substring(phone_number.indexOf("\"") + 1, phone_number.length() - 1);
                 }
-            Log.d("phone1sgsda11", "getPlaceDetails: " + phone_number);
         }
         return phone_number;
 

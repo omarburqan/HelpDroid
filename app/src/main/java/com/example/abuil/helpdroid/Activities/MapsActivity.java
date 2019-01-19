@@ -311,7 +311,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         googlePlaceUrl.append("&type="+nearbyPlace);
         googlePlaceUrl.append("&sensor=true");
         googlePlaceUrl.append("&key="+"AIzaSyB6RAW3vDo7_MOCz3tiPnYEy0xM1NgSj6c");
-        Log.d("near", "getUrl: " + googlePlaceUrl);
         return googlePlaceUrl.toString();
     }
     // getting the latitude and longitude of the Destination place

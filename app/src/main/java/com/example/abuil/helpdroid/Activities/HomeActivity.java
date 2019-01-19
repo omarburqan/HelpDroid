@@ -93,6 +93,7 @@ public class HomeActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home2);
+        bulidGoogleApiClient();
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         notificationManager = NotificationManagerCompat.from(this);
@@ -103,7 +104,6 @@ public class HomeActivity extends AppCompatActivity
         currentUserID=mAuth.getCurrentUser().getUid().toString();
         currentUser = mAuth.getCurrentUser();
         mp = MediaPlayer.create(HomeActivity.this, R.raw.danger_alarm);
-        bulidGoogleApiClient();
         mLocationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
         checkLocation(); //check whether location service is enable or not in your  phone
         /*get user details from the database*/
@@ -115,19 +115,16 @@ public class HomeActivity extends AppCompatActivity
                 familymember1 = dataSnapshot.child("familyMember1").getValue().toString();
                 familymember2 = dataSnapshot.child("familyMember2").getValue().toString();
                 familymember3 = dataSnapshot.child("familyMember3").getValue().toString();
-
                 panic_button.setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View view) {
 
                         if (checkPermission()) {
-
                             if(!checkLocation()){
                                 Toast.makeText(HomeActivity.this, "Location Services is not enabled", Toast.LENGTH_LONG).show();
                                 return;
                             }
-
                             /*Check if the location is already taken*/
                             if(lat.isEmpty() || lon.isEmpty()){
                                 Toast.makeText(HomeActivity.this, "Location not available yet,try again", Toast.LENGTH_SHORT).show();
@@ -443,6 +440,7 @@ public class HomeActivity extends AppCompatActivity
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
+            bulidGoogleApiClient();
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
             //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
