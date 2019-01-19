@@ -1,4 +1,4 @@
-package com.example.abuil.helpdroid.Activities;
+package com.example.abuil.helpdroid.Helpers;
 import java.io.IOException;
 import java.util.HashMap;
 

@@ -3,11 +3,7 @@ package com.example.abuil.helpdroid.Activities;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,10 +14,11 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.abuil.helpdroid.Helpers.GetDirectionsData;
+import com.example.abuil.helpdroid.Helpers.GetNearbyPlacesData;
 import com.example.abuil.helpdroid.R;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -39,10 +36,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.IOException;
-import java.util.List;
-
-
+// some implements in order to take the advantage of google maps and nearby places
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -50,12 +44,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnMarkerDragListener{
 
+    private long UPDATE_INTERVAL =  100;  /* 1secs */
+    private long FASTEST_INTERVAL = 1000; /* 10 sec */
     private GoogleMap mMap;
     private GoogleApiClient client;
     private LocationRequest locationRequest;
     private Location lastlocation;
     private Marker currentLocationmMarker;
-    //public static final int REQUEST_LOCATION_CODE = 99;
     int PROXIMITY_RADIUS = 5000;
     double latitude,longitude;
     double end_latitude, end_longitude;
@@ -65,12 +60,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        /// checking if the phone has location services (Version SDK)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
             checkLocationPermission();
-
         }
-
         //Check if Google Play Services Available or not
         if (!CheckGooglePlayServices()) {
             Log.d("onCreate", "Finishing test case since Google Play Services are not available");
@@ -79,17 +73,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         else {
             Log.d("onCreate","Google Play Services available.");
         }
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        // a progress bar when searching for nearby places.
         progressBar=findViewById(R.id.mapsProgressBar);
         progressBar.setVisibility(View.INVISIBLE);
 
-
-
     }
+    // Checking Google Play-Services
     private boolean CheckGooglePlayServices() {
         GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
         int result = googleAPI.isGooglePlayServicesAvailable(this);
@@ -102,6 +95,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         return true;
     }
+    // check lccation permission by request WHEN PRESSING CURRENT LOCATION BUTTON
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -150,21 +144,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             bulidGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
-
         mMap.setOnMarkerDragListener(this);
         mMap.setOnMarkerClickListener(this);
-
-
     }
     protected synchronized void bulidGoogleApiClient() {
         client = new GoogleApiClient.Builder(this).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
         client.connect();
-
     }
+    // override the back button
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK)
         {
-            Intent homeActivity = new Intent(getApplicationContext(),Home.class);
+            Intent homeActivity = new Intent(getApplicationContext(), HomeActivity.class);
             startActivity(homeActivity);
             finish();
         }
@@ -174,8 +165,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         locationRequest = new LocationRequest();
-        locationRequest.setInterval(100);
-        locationRequest.setFastestInterval(1000);
+        locationRequest.setInterval(UPDATE_INTERVAL);
+        locationRequest.setFastestInterval(FASTEST_INTERVAL);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION ) == PackageManager.PERMISSION_GRANTED)
         {
@@ -214,7 +205,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             LocationServices.FusedLocationApi.removeLocationUpdates(client,this);
         }
     }
-
+    // CHECK LOCATION PERMISSION WHEN OPENING THIS ACTIVITY
     public boolean checkLocationPermission()
     {
         if (ContextCompat.checkSelfPermission(this,
@@ -242,6 +233,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return true;
         }
     }
+    // ON CLICK THE BUTTONS WHICH IS INSIDE MAPS ACTIVITY
     public void onClick(View v)
     {
         Object dataTransfer[] = new Object[3];
@@ -251,58 +243,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         {
             case R.id.B_hopistals:
                 ShowNearbyPlaces(url,dataTransfer,getNearbyPlacesData,"hospital");
-               /* end_longitude=0.0;
-                end_latitude=0.0;
-                mMap.clear();
-                onLocationChanged(lastlocation);
-                String hospital = "hospital";
-                url = getUrl(latitude, longitude, hospital);
-                dataTransfer[0] = mMap;
-                dataTransfer[1] = url;
-                dataTransfer[2]=progressBar;
-                progressBar.setVisibility(View.VISIBLE);
-                getNearbyPlacesData.execute(dataTransfer);
-                Toast.makeText(MapsActivity.this, "Showing Nearby Hospitals", Toast.LENGTH_SHORT).show();*/
                 break;
             case R.id.B_policeStations:
                 ShowNearbyPlaces(url,dataTransfer,getNearbyPlacesData,"police");
-
-                /*end_longitude=0.0;
-                end_latitude=0.0;
-                mMap.clear();
-                onLocationChanged(lastlocation);
-                String policeStation = "police";
-                url = getUrl(latitude, longitude, policeStation);
-                dataTransfer[0] = mMap;
-                dataTransfer[1] = url;
-                dataTransfer[2]=progressBar;
-                progressBar.setVisibility(View.VISIBLE);
-                getNearbyPlacesData.execute(dataTransfer);
-                Toast.makeText(MapsActivity.this, " Showing Nearby PolceStations" , Toast.LENGTH_SHORT).show();*/
                 break;
             case R.id.B_fireStations:
                 ShowNearbyPlaces(url,dataTransfer,getNearbyPlacesData,"fire_station");
-
-                /*end_longitude=0.0;
-                end_latitude=0.0;
-                mMap.clear();
-                onLocationChanged(lastlocation);
-                String fireStations = "fire_station";
-                url = getUrl(latitude, longitude, fireStations);
-                dataTransfer[0] = mMap;
-                dataTransfer[1] = url;
-                dataTransfer[2]=progressBar;
-                progressBar.setVisibility(View.VISIBLE);
-                getNearbyPlacesData.execute(dataTransfer);
-                Toast.makeText(MapsActivity.this, "Showing Nearby FireStations" , Toast.LENGTH_SHORT).show();*/
                 break;
-            case R.id.B_to:
+            case R.id.B_to: // CALCULATE THE DIRECTION BETWEEN A MARKER(PLACE) AND USER LOCATION
                 if(end_latitude==0.0 && end_longitude==0.0){
                     Toast.makeText(MapsActivity.this, "Please chose a marker" , Toast.LENGTH_SHORT).show();
                     break;
                 }
                 mMap.clear();
-
+                MarkerOptions markerOptions=new MarkerOptions();
+                LatLng latLng=new LatLng(end_latitude,end_longitude);
+                markerOptions.position(latLng);
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                mMap.addMarker(markerOptions);
                 dataTransfer = new Object[3];
                 url = getDirectionsUrl();
                 GetDirectionsData getDirectionsData = new GetDirectionsData();
@@ -313,23 +271,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 break;
         }
     }
-
+    // A PRIVATE METHOD TO GET NEARBYPLACES ACCORDING TO THE USER ORDER
     private void ShowNearbyPlaces(String url,Object[] dataTransfer,GetNearbyPlacesData getNearbyPlacesData,String place) {
-
         end_longitude=0.0;
         end_latitude=0.0;
         mMap.clear();
         onLocationChanged(lastlocation);
-        String hospital = place;
-        url = getUrl(latitude, longitude, hospital);
+        url = getUrl(latitude, longitude, place);
         dataTransfer[0] = mMap;
         dataTransfer[1] = url;
         dataTransfer[2]=progressBar;
         progressBar.setVisibility(View.VISIBLE);
         getNearbyPlacesData.execute(dataTransfer);
-        Toast.makeText(MapsActivity.this, "Showing Nearby " + place, Toast.LENGTH_SHORT).show();
+        if(place == "hospital"){
+            Toast.makeText(MapsActivity.this, "Showing Nearby Hospitals", Toast.LENGTH_SHORT).show();
+        }else if(place== "police"){
+            Toast.makeText(MapsActivity.this, "Showing Nearby Police Stations", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(MapsActivity.this, "Showing Nearby Fire Stations", Toast.LENGTH_SHORT).show();
+        }
     }
-
+    // build the direction url (calculating route when button to is pressed)
     private String getDirectionsUrl()
     {
         StringBuilder googleDirectionsUrl = new StringBuilder("https://maps.googleapis.com/maps/api/directions/json?");
@@ -339,6 +301,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         return googleDirectionsUrl.toString();
     }
+    // build the url of nearby places.
     private String getUrl(double latitude , double longitude , String nearbyPlace)
     {
 
@@ -351,7 +314,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.d("near", "getUrl: " + googlePlaceUrl);
         return googlePlaceUrl.toString();
     }
-
+    // getting the latitude and longitude of the Destination place
     @Override
     public boolean onMarkerClick(Marker marker) {
         end_latitude=marker.getPosition().latitude;

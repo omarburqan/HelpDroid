@@ -1,4 +1,4 @@
-package com.example.abuil.helpdroid.Activities;
+package com.example.abuil.helpdroid.Helpers;
 
 import android.graphics.Color;
 import android.os.AsyncTask;

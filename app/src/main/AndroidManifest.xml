@@ -27,7 +27,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service
-            android:name=".Activities.NotificationService"
+            android:name=".Helpers.NotificationService"
             android:enabled="true"
             android:exported="true"></service>
 
@@ -41,7 +41,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Activities.Home"
+            android:name=".Activities.HomeActivity"
             android:label="@string/title_activity_home"
             android:theme="@style/AppTheme.NoActionBar" />
         <!--

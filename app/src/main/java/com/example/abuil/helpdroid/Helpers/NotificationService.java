@@ -1,4 +1,4 @@
-package com.example.abuil.helpdroid.Activities;
+package com.example.abuil.helpdroid.Helpers;
 
 import android.app.PendingIntent;
 import android.app.Service;
@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
+import com.example.abuil.helpdroid.Activities.HomeActivity;
 import com.example.abuil.helpdroid.R;
 
 public class NotificationService extends Service {
@@ -27,7 +28,7 @@ public class NotificationService extends Service {
     }
 
     private void startForeground() {
-        Intent notificationIntent = new Intent(this, Home.class);
+        Intent notificationIntent = new Intent(this, HomeActivity.class);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, 0);

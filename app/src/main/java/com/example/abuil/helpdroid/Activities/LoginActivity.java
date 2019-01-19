@@ -3,12 +3,9 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -38,21 +35,20 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        HomeActivity = new Intent(this,com.example.abuil.helpdroid.Activities.Home.class);
+        HomeActivity = new Intent(this, com.example.abuil.helpdroid.Activities.HomeActivity.class);
         myDataBase = FirebaseDatabase.getInstance().getReference();
         userMail = findViewById(R.id.login_mail);
         userPassword = findViewById(R.id.login_password);
-        btnLogin = findViewById(R.id.loginBtn);
         loginProgress = findViewById(R.id.login_progress);
         mAuth = FirebaseAuth.getInstance();
         currentUser=mAuth.getCurrentUser();
-        if(currentUser!=null){
+        loginProgress.setVisibility(View.INVISIBLE);
+        if(currentUser!=null){ // check if the user had already logged when he opens the application
 
             updateUI();
         }
-
+        // init the register button
         btnReg=findViewById(R.id.rgsButton);
-
         btnReg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,7 +58,8 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
-        loginProgress.setVisibility(View.INVISIBLE);
+        // init the login button
+        btnLogin = findViewById(R.id.loginBtn);
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,80 +80,58 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-
-
     }
-
+    // Sign in by using firebase-database Authentication
     private void signIn(String mail, String password) {
-
-
         mAuth.signInWithEmailAndPassword(mail,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-
-
                 if (task.isSuccessful()) {
-
                     loginProgress.setVisibility(View.INVISIBLE);
                     btnLogin.setVisibility(View.VISIBLE);
                     myDataBase.child("Users").child(mAuth.getCurrentUser().getUid()).child("isOnline").setValue("true");
                     updateUI();
-
                 }
                 else {
                     showMessage(task.getException().getMessage());
                     btnLogin.setVisibility(View.VISIBLE);
                     loginProgress.setVisibility(View.INVISIBLE);
                 }
-
-
             }
         });
-
-
-
     }
-
+    // updating userinterface by starting a Home activity
     private void updateUI() { // Start home Activity
-
         startActivity(HomeActivity);
         finish();
-
     }
 
-    private void showMessage(String text) {  // a private method to make soem toasts
-
+    private void showMessage(String text) {
+        // a private method to make soem toasts
         Toast.makeText(getApplicationContext(),text,Toast.LENGTH_LONG).show();
     }
 
-
+    //user is already connected  so we need to redirect him to home page
+    //extra
+    // making sure so we can all the sitution to check if user has already logged in
+    //so we can make sure there is no bug
     @Override
     protected void onStart() {
         super.onStart();
         FirebaseUser user = mAuth.getCurrentUser();
-
         if(user != null) {
-            //user is already connected  so we need to redirect him to home page
             updateUI();
-
         }
-
-
-
     }
+    //user is already connected  so we need to redirect him to home page
+   //Importatnt not extra
     @Override
     protected void onResume() {
         super.onResume();
         FirebaseUser user = mAuth.getCurrentUser();
 
         if (user != null) {
-            //user is already connected  so we need to redirect him to home page
             updateUI();
-
         }
-
-
     }
-
-
 }

@@ -9,7 +9,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -30,35 +29,17 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
-/*import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.example.aws.blogapp.R;
-*/
-import com.google.firebase.database.IgnoreExtraProperties;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+
 public class RegisterActivity extends AppCompatActivity {
-
-
     ImageView ImgUserPhoto;
     static int PReqCode = 1 ;
     static int REQUESCODE = 1 ;
     Uri pickedImgUri ;
-
     private EditText userEmail,userPassword,userPAssword2,userName,userNumber,familymember1,familymember2,familymember3;
     private ProgressBar loadingProgress;
     private Button regBtn;
-
-
     private FirebaseAuth mAuth;
     private DatabaseReference myDataBase;
 
@@ -68,7 +49,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        //ini views
+        //init the Edittext
         userEmail = findViewById(R.id.regMail);
         userPassword = findViewById(R.id.regPassword);
         userPAssword2 = findViewById(R.id.regPassword2);
@@ -78,18 +59,18 @@ public class RegisterActivity extends AppCompatActivity {
         familymember1=findViewById(R.id.familymember1);
         familymember2=findViewById(R.id.familymember2);
         familymember3=findViewById(R.id.familymember3);
-
+        // init register button
         regBtn = findViewById(R.id.regBtn);
+        //init loadingprogress
         loadingProgress.setVisibility(View.INVISIBLE);
+        //init database
         myDataBase=FirebaseDatabase.getInstance().getReference();
-
+        //init auth
         mAuth = FirebaseAuth.getInstance();
-
 
         regBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 regBtn.setVisibility(View.INVISIBLE);
                 loadingProgress.setVisibility(View.VISIBLE);
                 final String email = userEmail.getText().toString();
@@ -115,9 +96,8 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
-
+        //init image user as a button and if clicked opengallery after take the permission
         ImgUserPhoto = findViewById(R.id.regUserPhoto) ;
-
         ImgUserPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -132,50 +112,46 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
     }
-
+    // adding the new user details to the database.
     private void CreateUserAccount(final String email, final String name, String password, final String familyMember1, final String familyMember2, final String familyMember3,final String number,final String isOnline) {
         // this method create user account with specific email and password
         mAuth.createUserWithEmailAndPassword(email,password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // user account created successfully
-                            showMessage("Account created");
-                            // after we created user account we need to update his profile picture and name
-                            updateUserInfo( name ,pickedImgUri,mAuth.getCurrentUser());
-                            final String userID = mAuth.getCurrentUser().getUid();
-                            myDataBase.child("Users").child(userID).setValue("").addOnCompleteListener(new OnCompleteListener<Void>() {
-
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        myDataBase.child("Users").child(userID).child("email").setValue(email);
-                                        myDataBase.child("Users").child(userID).child("name").setValue(name);
-                                        myDataBase.child("Users").child(userID).child("number").setValue(number);
-                                        myDataBase.child("Users").child(userID).child("familyMember1").setValue(familyMember1);
-                                        myDataBase.child("Users").child(userID).child("familyMember2").setValue(familyMember2);
-                                        myDataBase.child("Users").child(userID).child("familyMember3").setValue(familyMember3);
-                                        myDataBase.child("Users").child(userID).child("isOnline").setValue(isOnline);
-
-                                    }
-                                    else{
-                                        Toast.makeText(RegisterActivity.this, "Error to store in database", Toast.LENGTH_SHORT).show();
-                                    }
+            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()) {
+                        // user account created successfully
+                        showMessage("Account created");
+                        // after we created user account we need to update his profile picture and name
+                        updateUserInfo( name ,pickedImgUri,mAuth.getCurrentUser());
+                        final String userID = mAuth.getCurrentUser().getUid();
+                        myDataBase.child("Users").child(userID).setValue("").addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    myDataBase.child("Users").child(userID).child("email").setValue(email);
+                                    myDataBase.child("Users").child(userID).child("name").setValue(name);
+                                    myDataBase.child("Users").child(userID).child("number").setValue(number);
+                                    myDataBase.child("Users").child(userID).child("familyMember1").setValue(familyMember1);
+                                    myDataBase.child("Users").child(userID).child("familyMember2").setValue(familyMember2);
+                                    myDataBase.child("Users").child(userID).child("familyMember3").setValue(familyMember3);
+                                    myDataBase.child("Users").child(userID).child("isOnline").setValue(isOnline);
                                 }
-
-                            });
-                        }
-                        else
-                        {
-                            // account creation failed
-                            showMessage("account creation failed" + task.getException().getMessage());
-                            regBtn.setVisibility(View.VISIBLE);
-                            loadingProgress.setVisibility(View.INVISIBLE);
-
-                        }
+                                else{
+                                    Toast.makeText(RegisterActivity.this, "Error to store in database", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
                     }
-                });
+                    else
+                    {
+                        // account creation failed
+                        showMessage("account creation failed" + task.getException().getMessage());
+                        regBtn.setVisibility(View.VISIBLE);
+                        loadingProgress.setVisibility(View.INVISIBLE);
+                    }
+                }
+            });
     }
 
 
@@ -219,19 +195,17 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
     }
-
+    // Go to HomeActivity if the register is succesful
     private void updateUI() {
 
-        Intent homeActivity = new Intent(getApplicationContext(),Home.class);
+        Intent homeActivity = new Intent(getApplicationContext(), HomeActivity.class);
         startActivity(homeActivity);
         finish();
     }
 
     // simple method to show toast message
     private void showMessage(String message) {
-
         Toast.makeText(getApplicationContext(),message,Toast.LENGTH_LONG).show();
-
     }
 
     private void openGallery() {
@@ -240,7 +214,7 @@ public class RegisterActivity extends AppCompatActivity {
         galleryIntent.setType("image/*");
         startActivityForResult(galleryIntent,REQUESCODE);
     }
-
+    //permission for storage
     private void checkAndRequestForPermission() {
         if (ContextCompat.checkSelfPermission(RegisterActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -259,18 +233,18 @@ public class RegisterActivity extends AppCompatActivity {
             openGallery();
     }
 
-
+    // after taking the photo saving the imgUri
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == REQUESCODE && data != null ) {
-
             // the user has successfully picked an image
             // we need to save its reference to a Uri variable
             pickedImgUri = data.getData() ;
             ImgUserPhoto.setImageURI(pickedImgUri);
         }
     }
+    //override back button
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK)
         {

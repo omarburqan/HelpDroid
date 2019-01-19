@@ -2,31 +2,23 @@ package com.example.abuil.helpdroid.Activities;
 
 import android.Manifest;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
-import android.speech.RecognitionListener;
 import android.speech.SpeechRecognizer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.telephony.SmsManager;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -35,26 +27,19 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.abuil.helpdroid.R;
-import com.example.abuil.helpdroid.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -64,17 +49,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import static com.example.abuil.helpdroid.Activities.NotifcationsActivity.CHANNEL_1_ID;
 
-public class Home extends AppCompatActivity
+public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -85,7 +62,7 @@ public class Home extends AppCompatActivity
     private static final String TAG ="home>>" ;
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
-    private Button sendSMS;
+    private Button panic_button;
     private DatabaseReference myDataBase;
     Notification notification;
     String familymember1;
@@ -107,31 +84,29 @@ public class Home extends AppCompatActivity
 
     private LocationRequest mLocationRequest;
     private com.google.android.gms.location.LocationListener listener;
-    private long UPDATE_INTERVAL =  100;  /* 10 secs */
-    private long FASTEST_INTERVAL = 1000; /* 2 sec */
+    private long UPDATE_INTERVAL =  100;  /* 1secs */
+    private long FASTEST_INTERVAL = 1000; /* 10 sec */
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        notificationManager = NotificationManagerCompat.from(this);
         setContentView(R.layout.activity_home2);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        notificationManager = NotificationManagerCompat.from(this);
         MessagesActivity = new Intent(getApplicationContext(),com.example.abuil.helpdroid.Activities.MessagesActivity.class);
-        sendSMS = findViewById(R.id.panicButton);
+        panic_button = findViewById(R.id.panicButton);
         myDataBase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         currentUserID=mAuth.getCurrentUser().getUid().toString();
         currentUser = mAuth.getCurrentUser();
-        final MediaPlayer mp = MediaPlayer.create(Home.this, R.raw.danger_alarm);
+        final MediaPlayer mp = MediaPlayer.create(HomeActivity.this, R.raw.danger_alarm);
         bulidGoogleApiClient();
-
         mLocationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
         checkLocation(); //check whether location service is enable or not in your  phone
-
-
+        /*get user details from the database*/
         myDataBase.child("Users").child(mAuth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -141,7 +116,7 @@ public class Home extends AppCompatActivity
                 familymember2 = dataSnapshot.child("familyMember2").getValue().toString();
                 familymember3 = dataSnapshot.child("familyMember3").getValue().toString();
 
-                sendSMS.setOnClickListener(new View.OnClickListener() {
+                panic_button.setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View view) {
@@ -149,14 +124,21 @@ public class Home extends AppCompatActivity
                         if (checkPermission()) {
 
                             if(!checkLocation()){
-                                Toast.makeText(Home.this, "Location Services is not enabled", Toast.LENGTH_LONG).show();
+                                Toast.makeText(HomeActivity.this, "Location Services is not enabled", Toast.LENGTH_LONG).show();
                                 return;
                             }
+
+                            /*Check if the location is already taken*/
+                            if(lat == null || lon == null){
+                                Toast.makeText(HomeActivity.this, "Location not available yet,try again", Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                            // get the locataion for the user and build it into the location link.
                             locationlink="http://www.google.com/maps/place/"+lat+","+lon;
 
 
                             //Send the SMS//
-                            Toast.makeText(Home.this, "sending", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(HomeActivity.this, "sending", Toast.LENGTH_SHORT).show();
                             if(!familymember1.isEmpty() ){
                                 CheckFamilyMemberIsActive(familymember1);
                              }
@@ -166,9 +148,9 @@ public class Home extends AppCompatActivity
                             if(!familymember3.isEmpty()) {
                                 CheckFamilyMemberIsActive(familymember3);
                             }
-                          //  mp.start();
+                           mp.start();
                         } else {
-                            Toast.makeText(Home.this, "Permission denied", Toast.LENGTH_LONG).show();
+                            Toast.makeText(HomeActivity.this, "Permission denied", Toast.LENGTH_LONG).show();
                         }
                     }
 
@@ -182,17 +164,17 @@ public class Home extends AppCompatActivity
         });
 
 
-        // ini
 
-
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        // init the messages button
+        FloatingActionButton MessagesButton = findViewById(R.id.fab);
+        MessagesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(MessagesActivity);
                 finish();
             }
         });
+        // init the mute the alaram sound
         FloatingActionButton mute = findViewById(R.id.mute);
         mute.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -200,27 +182,24 @@ public class Home extends AppCompatActivity
                 mp.pause();
             }
         });
-
+        // open the navigation menu
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
         updateNavHeader();
-
+        // keep checking if this  user has recieved a new message and update the messages with notification.
         myDataBase.child("Users").child(currentUser.getUid()).child("Messages").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Intent notificationIntent = new Intent(Home.this, MessagesActivity.class);
+                Intent notificationIntent = new Intent(HomeActivity.this, MessagesActivity.class);
 
-                PendingIntent pendingIntent = PendingIntent.getActivity(Home.this, 0,
+                PendingIntent pendingIntent = PendingIntent.getActivity(HomeActivity.this, 0,
                         notificationIntent, 0);
-                notification = new NotificationCompat.Builder(Home.this, CHANNEL_1_ID)
+                notification = new NotificationCompat.Builder(HomeActivity.this, CHANNEL_1_ID)
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentTitle(dataSnapshot.getKey().toString())
                         .setContentText("Please Help Me , Emergency situation")
@@ -233,12 +212,12 @@ public class Home extends AppCompatActivity
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                Intent notificationIntent = new Intent(Home.this, MessagesActivity.class);
+                Intent notificationIntent = new Intent(HomeActivity.this, MessagesActivity.class);
 
-                PendingIntent pendingIntent = PendingIntent.getActivity(Home.this, 0,
+                PendingIntent pendingIntent = PendingIntent.getActivity(HomeActivity.this, 0,
                         notificationIntent, 0);
 
-                notification = new NotificationCompat.Builder(Home.this, CHANNEL_1_ID)
+                notification = new NotificationCompat.Builder(HomeActivity.this, CHANNEL_1_ID)
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentTitle(dataSnapshot.getKey().toString())
                         .setContentText("Please Help Me , Emergency situation")
@@ -269,12 +248,12 @@ public class Home extends AppCompatActivity
         });
 
 
-
+        // we did this to prevent the app from pop up the notification every time it starts
         myDataBase.child("Users").child(currentUser.getUid()).child("Messages").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                if(enter )
+                if(enter)
                     notificationManager.notify(1, notification);
                 else {
                     enter = true;
@@ -292,7 +271,7 @@ public class Home extends AppCompatActivity
 
 
     }
-
+    //checking if family member has account and if he is online or not to send normalSMS or in app built messages
     private void CheckFamilyMemberIsActive(final String Number){
         final SmsManager smsManager = SmsManager.getDefault();
 
@@ -328,7 +307,7 @@ public class Home extends AppCompatActivity
                     }
                 }
                 if(!messageSent[0]){
-                    String mess = "I need Your Assistance this location,Please. \n";
+                    String mess = "I need Your Assistance at this location,Please help me \n";
                     mess +=locationlink;
                     smsManager.sendTextMessage(Number, null, mess
                                         , null, null);
@@ -344,6 +323,7 @@ public class Home extends AppCompatActivity
 
 
     }
+    // override the backbutton pressing.
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -357,6 +337,8 @@ public class Home extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
+    // Listener for navigation menu buttons(items)
+    // each button will start a new different activity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
@@ -383,7 +365,7 @@ public class Home extends AppCompatActivity
     }
 
     public void updateNavHeader() {
-
+        // Displaying the user details such as name ,email and photo in the navigation menu
         NavigationView navigationView = findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
         final TextView navUsername = headerView.findViewById(R.id.nav_username);
@@ -412,12 +394,12 @@ public class Home extends AppCompatActivity
     }
 
     private boolean checkPermission() {
-
-        ActivityCompat.requestPermissions(Home.this, new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.SEND_SMS,
+        // checking SMS,and Phone,
+        ActivityCompat.requestPermissions(HomeActivity.this, new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.SEND_SMS,
         Manifest.permission.ACCESS_FINE_LOCATION},1);
-        int result = ContextCompat.checkSelfPermission(Home.this, Manifest.permission.SEND_SMS);
+        int result = ContextCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.SEND_SMS);
 
-        int result2 = ContextCompat.checkSelfPermission(Home.this, Manifest.permission.READ_PHONE_STATE);
+        int result2 = ContextCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.READ_PHONE_STATE);
         boolean result3 = checkLocationPermission();
         if (result == PackageManager.PERMISSION_GRANTED && result2 == PackageManager.PERMISSION_GRANTED && result3==true ) {
 
@@ -426,6 +408,7 @@ public class Home extends AppCompatActivity
             return false;
         }
     }
+    // checking the location permission
     public boolean checkLocationPermission()
     {
         if (ContextCompat.checkSelfPermission(this,
@@ -473,14 +456,13 @@ public class Home extends AppCompatActivity
         startLocationUpdates();
 
         mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
+    // first we check the location if not we try one more time and after that if not located we toast a message.
         if(mLocation == null){
             startLocationUpdates();
         }
         if (mLocation != null) {
                 lat=String.valueOf(mLocation.getLatitude());
                 lon=String.valueOf(mLocation.getLongitude());
-
         } else {
             Toast.makeText(this, "Location not Detected", Toast.LENGTH_SHORT).show();
         }
@@ -497,7 +479,7 @@ public class Home extends AppCompatActivity
         Log.i(TAG, "Connection failed. Error: " + connectionResult.getErrorCode());
 
     }
-
+    //update the current location every 1 sec.
     @Override
     public void onLocationChanged(Location location) {
 
@@ -508,7 +490,7 @@ public class Home extends AppCompatActivity
        lon=String.valueOf(location.getLongitude());
 
 
-        // You can now create a LatLng Object for use with maps
+        // create a LatLng Object for use with maps
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
     }
     protected void startLocationUpdates() {
@@ -525,12 +507,11 @@ public class Home extends AppCompatActivity
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
                 mLocationRequest, this);
-        Log.d("reque", "--->>>>");
     }
 
     private boolean checkLocation() {
         if(!isLocationEnabled())
-            Log.d(TAG, "checkLocation: ");
+            Log.d(TAG, "checkLocation: Location is not enabled");
         return isLocationEnabled();
     }
     private boolean isLocationEnabled() {

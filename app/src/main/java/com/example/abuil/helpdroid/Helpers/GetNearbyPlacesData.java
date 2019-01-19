@@ -1,12 +1,10 @@
-package com.example.abuil.helpdroid.Activities;
+package com.example.abuil.helpdroid.Helpers;
 
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,7 +19,7 @@ import java.util.List;
  * @author Priyanka
  */
 
-class GetNearbyPlacesData extends AsyncTask<Object, String, String> {
+public  class GetNearbyPlacesData extends AsyncTask<Object, String, String> {
 
     private String googlePlacesData;
     private GoogleMap mMap;
