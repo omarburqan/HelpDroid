@@ -129,8 +129,8 @@ public class HomeActivity extends AppCompatActivity
                             }
 
                             /*Check if the location is already taken*/
-                            if(lat == null || lon == null){
-                                Toast.makeText(HomeActivity.this, "Location not available yet,try again", Toast.LENGTH_LONG).show();
+                            if(lat.isEmpty() || lon.isEmpty()){
+                                Toast.makeText(HomeActivity.this, "Location not available yet,try again", Toast.LENGTH_SHORT).show();
                                 return;
                             }
                             // get the locataion for the user and build it into the location link.
@@ -419,18 +419,13 @@ public class HomeActivity extends AppCompatActivity
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-
             // Asking user if explanation is needed
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-
                 //Prompt the user once explanation has been shown
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
-
-
             } else {
                 // No explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions(this,
