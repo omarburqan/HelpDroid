@@ -6,6 +6,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.abuil.helpdroid.Activities.HomeActivity;
+import com.example.abuil.helpdroid.Activities.MapsActivity;
+
 import org.json.JSONArray;
 import org.json.JSONException
 
@@ -19,8 +22,10 @@ import java.util.List;
 /**
  * @author Priyanka
  */
-
+// A CLASS WHICH PARSE THE JSON THAT WERE RECEIVED FROM THE GOOGLE URL PLACES.
+    // parse a JSON to a normal string.
 public class DataParser {
+    //returns a hashmap of the nearby place with full details.
     private HashMap<String, String> getPlace(JSONObject googlePlaceJson) {
         HashMap<String, String> googlePlaceMap = new HashMap<>();
         String placeName = "--NA--";
@@ -61,7 +66,7 @@ public class DataParser {
         return googlePlaceMap;
 
     }
-
+    //create a list of hashmap for each place
     private List<HashMap<String, String>> getPlaces(JSONArray jsonArray) {
         int count = jsonArray.length();
         List<HashMap<String, String>> placelist = new ArrayList<>();
@@ -77,7 +82,7 @@ public class DataParser {
         }
         return placelist;
     }
-
+    //parse the result array from the  JSONclass and then call the getplaces method to create a list of places
     public List<HashMap<String, String>> parse(String jsonData) {
         JSONArray jsonArray = null;
         JSONObject jsonObject;
@@ -91,7 +96,7 @@ public class DataParser {
         }
         return getPlaces(jsonArray);
     }
-
+    //parse  the jsonDATA that received from the DownloadURL class
     public String[] parseDirections(String jsonData) {
         JSONArray jsonArray = null;
         JSONObject jsonObject;
@@ -108,17 +113,16 @@ public class DataParser {
         Log.d("taag", "parseDirections: " + jsonArray);
         return getPaths(jsonArray);
     }
-
+    //get the path between 2 locations
     public String[] getPaths(JSONArray googleStepsJson) {
 
         int count=0;
       try {
           count= googleStepsJson.length();
       }
-      catch (Exception e) {
-          Log.d(">>", "getPaths: ");
+      catch (Exception e) {// the number of steps is null (cannot get directions)
+          Log.d("Parser", "getPathsError: Cant get direction to this place");
       }
-        Log.d("count", "getPaths: " + count);
         String[] polylines = new String[count];
 
         for (int i = 0; i < count; i++) {
@@ -131,7 +135,7 @@ public class DataParser {
 
         return polylines;
     }
-
+    // get the path for a specified place by google points
     public String getPath(JSONObject googlePathJson) {
         String polyline = "";
         try {
@@ -141,7 +145,7 @@ public class DataParser {
         }
         return polyline;
     }
-
+    // parse a string to get the phone number for a specified place
     public String getPlaceDetails(String jsonData) {
         String phone_number = "";
         JSONArray arr = null;

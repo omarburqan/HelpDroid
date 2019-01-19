@@ -13,10 +13,10 @@ import java.net.URL;
  * @author Priyanka
  */
 
-
+// THIS CLASS WE UEE TO EXECUTE A URL to String
 
 public class DownloadURL {
-
+    // READ the URL by inputStream using HTTP request that must run in THREAD
     public String readUrl(String myUrl) throws IOException
     {
         String data = "";
@@ -25,13 +25,11 @@ public class DownloadURL {
 
         try {
             URL url = new URL(myUrl);
-
             urlConnection=(HttpURLConnection) url.openConnection();
             urlConnection.connect();
             inputStream = urlConnection.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
             StringBuffer sb = new StringBuffer();
-
             String line = "";
             while((line = br.readLine()) != null)
             {

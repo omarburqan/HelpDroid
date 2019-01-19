@@ -15,18 +15,18 @@ public class NotificationService extends Service {
 
     public NotificationService() {
     }
-
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         startForeground();
         return super.onStartCommand(intent, flags, startId);
     }
-
+    //init the notifcations with special details and then when we need to notfiy we override the notifcation according to what we want to display
     private void startForeground() {
         Intent notificationIntent = new Intent(this, HomeActivity.class);
 
