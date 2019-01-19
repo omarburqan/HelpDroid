@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Helpdroid</string>
+    <string name="name">Name</string>
+    <string name="mail">Mail</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="register">Register</string>
+    <string name="todo">TODO</string>
+    <string name="familymember1">Family member 1</string>
+    <string name="familymember2">Family member 2</string>
+    <string name="familymember3">Family member 3</string>
+    <string name="Update">Update</string>
+
+    <string name="title_activity_home">Home</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="mail_adress">Mail Adress</string>
+    <string name="login">Login</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="your_number">Your Number</string>
+
+</resources>
