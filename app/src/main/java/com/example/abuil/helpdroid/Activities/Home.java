@@ -85,7 +85,6 @@ public class Home extends AppCompatActivity
     private static final String TAG ="home>>" ;
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
-    public static boolean logout = false;
     private Button sendSMS;
     private DatabaseReference myDataBase;
     Notification notification;
@@ -371,7 +370,6 @@ public class Home extends AppCompatActivity
             startActivity(mapsActivity);
             finish();
         } else if (id == R.id.nav_logout) {
-            logout = true;
             mAuth.signOut();
             myDataBase.child("Users").child(currentUserID).child("isOnline").setValue("false");
             Intent loginActivity = new Intent(getApplicationContext(), LoginActivity.class);

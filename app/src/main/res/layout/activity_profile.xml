@@ -19,27 +19,27 @@
        />
 
 
-    <EditText
-        android:id="@+id/userName"
-        android:layout_width="265dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/reg_edittext_style"
-        android:ems="10"
-        android:hint="@string/name"
-        android:inputType="textPersonName"
-        android:layout_gravity="center"
-        android:layout_marginTop="10dp"/>
+    <!--<EditText-->
+        <!--android:id="@+id/userName"-->
+        <!--android:layout_width="265dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="@drawable/reg_edittext_style"-->
+        <!--android:ems="10"-->
+        <!--android:hint="@string/name"-->
+        <!--android:inputType="textPersonName"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_marginTop="10dp"/>-->
 
-    <EditText
-        android:background="@drawable/reg_edittext_style"
-        android:hint="@string/mail"
-        android:id="@+id/userMail"
-        android:layout_width="265dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:layout_gravity="center"
-        android:layout_marginTop="10dp"/>
+    <!--<EditText-->
+        <!--android:background="@drawable/reg_edittext_style"-->
+        <!--android:hint="@string/mail"-->
+        <!--android:id="@+id/userMail"-->
+        <!--android:layout_width="265dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:ems="10"-->
+        <!--android:inputType="textPersonName"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_marginTop="10dp"/>-->
     <EditText
         android:id="@+id/edit_yournumber"
         android:layout_width="265dp"

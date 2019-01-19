@@ -3,6 +3,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -30,19 +31,26 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private Intent HomeActivity;
     private Button btnReg;
+    private FirebaseUser currentUser;
     private DatabaseReference myDataBase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        HomeActivity = new Intent(this,com.example.abuil.helpdroid.Activities.Home.class);
         myDataBase = FirebaseDatabase.getInstance().getReference();
         userMail = findViewById(R.id.login_mail);
         userPassword = findViewById(R.id.login_password);
         btnLogin = findViewById(R.id.loginBtn);
         loginProgress = findViewById(R.id.login_progress);
         mAuth = FirebaseAuth.getInstance();
-        HomeActivity = new Intent(this,com.example.abuil.helpdroid.Activities.Home.class);
+        currentUser=mAuth.getCurrentUser();
+        if(currentUser!=null){
+
+            updateUI();
+        }
+
         btnReg=findViewById(R.id.rgsButton);
 
         btnReg.setOnClickListener(new View.OnClickListener() {
@@ -127,12 +135,25 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         FirebaseUser user = mAuth.getCurrentUser();
 
-        if(user != null&&Home.logout==false) {
+        if(user != null) {
             //user is already connected  so we need to redirect him to home page
             updateUI();
 
         }
 
+
+
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        if (user != null) {
+            //user is already connected  so we need to redirect him to home page
+            updateUI();
+
+        }
 
 
     }

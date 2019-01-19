@@ -38,7 +38,8 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 public class ProfileActivity extends AppCompatActivity {
-    private EditText userEmail,userName,familymember1,familymember2,familymember3,userNumber;
+    private EditText familymember1,familymember2,familymember3,userNumber;
+    String userName;
     private Button update;
     private ProgressBar upProgressbar;
     private DatabaseReference myDataBase;
@@ -52,8 +53,7 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        userEmail=findViewById(R.id.userMail);
-        userName=findViewById(R.id.userName);
+        userName="";
         userNumber=findViewById(R.id.edit_yournumber);
         familymember1=findViewById(R.id.edit_familymember1);
         familymember2=findViewById(R.id.edit_familymember2);
@@ -70,9 +70,8 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                userName = dataSnapshot.child("name").getValue().toString();
 
-                userName.setText(dataSnapshot.child("name").getValue().toString());
-                userEmail.setText(dataSnapshot.child("email").getValue().toString());
                 userNumber.setText(dataSnapshot.child("number").getValue().toString());
                 familymember1.setText(dataSnapshot.child("familyMember1").getValue().toString());
                 familymember2.setText(dataSnapshot.child("familyMember2").getValue().toString());
@@ -93,8 +92,7 @@ public class ProfileActivity extends AppCompatActivity {
                     Toast.makeText(ProfileActivity.this, "phone number required", Toast.LENGTH_SHORT).show();
                 }else {
 
-                    myDataBase.child("Users").child(userID).child("email").setValue(userEmail.getText().toString());
-                    myDataBase.child("Users").child(userID).child("name").setValue(userName.getText().toString());
+                    //myDataBase.child("Users").child(userID).child("name").setValue(userName.getText().toString());
                     myDataBase.child("Users").child(userID).child("number").setValue(userNumber.getText().toString());
                     myDataBase.child("Users").child(userID).child("familyMember1").setValue(familymember1.getText().toString());
                     myDataBase.child("Users").child(userID).child("familyMember2").setValue(familymember2.getText().toString());
@@ -115,7 +113,7 @@ public class ProfileActivity extends AppCompatActivity {
                                 public void onSuccess(Uri uri) {
                                     // uri contain user image url
                                     UserProfileChangeRequest profleUpdate = new UserProfileChangeRequest.Builder()
-                                            .setDisplayName(userName.getText().toString())
+                                            .setDisplayName(userName)
                                             .setPhotoUri(uri)
                                             .build();
                                     currentUser.updateProfile(profleUpdate);
