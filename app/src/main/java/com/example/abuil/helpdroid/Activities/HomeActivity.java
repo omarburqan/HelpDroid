@@ -86,7 +86,7 @@ public class HomeActivity extends AppCompatActivity
     private com.google.android.gms.location.LocationListener listener;
     private long UPDATE_INTERVAL =  100;  /* 1secs */
     private long FASTEST_INTERVAL = 1000; /* 10 sec */
-
+    private MediaPlayer mp;
 
 
     @Override
@@ -102,7 +102,7 @@ public class HomeActivity extends AppCompatActivity
         mAuth = FirebaseAuth.getInstance();
         currentUserID=mAuth.getCurrentUser().getUid().toString();
         currentUser = mAuth.getCurrentUser();
-        final MediaPlayer mp = MediaPlayer.create(HomeActivity.this, R.raw.danger_alarm);
+        mp = MediaPlayer.create(HomeActivity.this, R.raw.danger_alarm);
         bulidGoogleApiClient();
         mLocationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
         checkLocation(); //check whether location service is enable or not in your  phone
@@ -334,6 +334,11 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mp.stop();
+    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
