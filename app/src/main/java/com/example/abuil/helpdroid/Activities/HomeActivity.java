@@ -356,6 +356,7 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_logout) {
             mAuth.signOut();
             myDataBase.child("Users").child(currentUserID).child("isOnline").setValue("false");
+
             Intent loginActivity = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(loginActivity);
             finish();

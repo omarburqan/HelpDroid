@@ -17,6 +17,7 @@ public class NotifcationsActivity extends Application {
         startService(new Intent(this, NotificationService.class));
         createNotificationChannels();
     }
+
     //Build the notification channel
     private void createNotificationChannels(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
