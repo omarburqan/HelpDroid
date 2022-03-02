@@ -1,39 +1,36 @@
 {
   "project_info": {
-    "project_number": "179278699718",
-    "firebase_url": "https://helpdroid-f050f.firebaseio.com",
-    "project_id": "helpdroid-f050f",
-    "storage_bucket": "helpdroid-f050f.appspot.com"
+    "project_number": "793702208090",
+    "project_id": "helpdroid-fabec",
+    "storage_bucket": "helpdroid-fabec.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:179278699718:android:326f9eca6b0b808b",
+        "mobilesdk_app_id": "1:793702208090:android:c7780b168e2d7a7c957e63",
         "android_client_info": {
           "package_name": "com.example.abuil.helpdroid"
         }
       },
       "oauth_client": [
         {
-          "client_id": "179278699718-eidhkk4fbc266p8k3l921a400k8qdqi1.apps.googleusercontent.com",
+          "client_id": "793702208090-23amgrjhhrdgsvao10023r9sl38bbrfq.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDCi0sH5_dONn7jgSCCyZ-xlEetF3-DV2Q"
+          "current_key": "AIzaSyD91WsA6PhA543yVTlDqH6IpclRC5KxLBU"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
+          "other_platform_oauth_client": [
+            {
+              "client_id": "793702208090-23amgrjhhrdgsvao10023r9sl38bbrfq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
